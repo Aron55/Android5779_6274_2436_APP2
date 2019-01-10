@@ -36,18 +36,18 @@
                     android:layout_width="27dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/usr" />
+                    android:src="@drawable/message" />
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <EditText
-                        android:id="@+id/editUsr"
+                        android:id="@+id/editMailLog"
                         android:layout_width="202dp"
                         android:layout_height="46dp"
                         android:layout_weight="1"
-                        android:hint="Username" />
+                        android:hint="Email" />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
 
@@ -68,7 +68,7 @@
                     android:layout_height="45dp">
 
                     <EditText
-                        android:id="@+id/editpwd"
+                        android:id="@+id/editPwdLog"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:layout_weight="1"
@@ -91,7 +91,7 @@
         android:paddingRight="60dp">
 
         <TextView
-            android:id="@+id/lin"
+            android:id="@+id/buttonLog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -106,7 +106,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/sup"
+            android:id="@+id/buttonToSign"
             android:layout_width="match_parent"
             android:layout_height="32dp"
             android:layout_marginBottom="50dp"
