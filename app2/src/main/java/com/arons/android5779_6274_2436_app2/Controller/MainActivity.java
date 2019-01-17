@@ -3,16 +3,168 @@ package com.arons.android5779_6274_2436_app2.Controller;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.arons.android5779_6274_2436_app2.Model.Backend.DBManager;
+import com.arons.android5779_6274_2436_app2.Model.Backend.DBManager_Factory;
+import com.arons.android5779_6274_2436_app2.Model.Entities.Classes.CurrentDriver;
+import com.arons.android5779_6274_2436_app2.Model.Entities.Classes.Driver;
+import com.arons.android5779_6274_2436_app2.Model.Entities.Classes.Exceptions;
 import com.arons.android5779_6274_2436_app2.R;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
+    private EditText emailEditText;
+    private EditText passwordEditText;
+    private Button loginButton;
+    private TextView createAccountTextView;
+    private Driver mDriver;
+    private static DBManager backend;
+
+
+    private static final String userPreferences = "userPreferences";
+    private static final String userEmail = "email";
+    private static final String userPassword = "password";
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent in = new Intent(MainActivity.this,LoginActivity.class);
-        startActivity(in);
+
+        backend = DBManager_Factory.getInstance();
+        findViews();
+        sharedPreferences = getSharedPreferences(userPreferences, Context.MODE_PRIVATE);
+        showUserData();
     }
+
+
+    //Show data in EditTexts when app is launched, if data is there in Android Shared Preferences
+    private void showUserData() {
+        if (sharedPreferences.contains(userEmail))
+            emailEditText.setText(sharedPreferences.getString(userEmail, ""));
+        if (sharedPreferences.contains(userPassword))
+            passwordEditText.setText(sharedPreferences.getString(userPassword, ""));
+
+    }
+
+    private void findViews() {
+        emailEditText = (EditText) findViewById(R.id.emailEditText);
+        passwordEditText = (EditText) findViewById(R.id.passwordEditText);
+        emailEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!Exceptions.checkEmail(s.toString())) {
+                    emailEditText.setError("Email not valid");
+                } else {
+                    emailEditText.setError(null);
+                }
+
+            }
+        });
+
+        loginButton = (Button) findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isEmptyInput()) {
+                    Toast.makeText(getBaseContext(), "Please fill all the fields!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                ((RelativeLayout) findViewById(R.id.loadingPanel)).setVisibility(View.VISIBLE);
+                loginButton.setEnabled(false);
+                storeUserData();
+                backend.signIn(emailEditText.getText().toString(), passwordEditText.getText().toString(),
+                        new DBManager.Action() {
+                            @Override
+                            public void onSuccess() {
+                                loginButton.setEnabled(true);
+                                ((RelativeLayout) findViewById(R.id.loadingPanel)).setVisibility(View.GONE);
+                                openNextActivity();
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                ((RelativeLayout) findViewById(R.id.loadingPanel)).setVisibility(View.GONE);
+                                Toast.makeText(getBaseContext(), "Incorrect email or password!", Toast.LENGTH_LONG).show();
+                                loginButton.setEnabled(true);
+                            }
+                        });
+
+
+            }
+        });
+        createAccountTextView = (TextView) findViewById(R.id.createAccountTextView);
+        createAccountTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCreateAccountActivity();
+            }
+        });
+
+    }
+
+    private void openNextActivity() {
+        final Intent intent = new Intent(MainActivity.this, RidesManagerActivity.class);
+        backend.getCurrentUser(new DBManager.ActionResult() {
+            @Override
+            public void onSuccess(Driver driver) {
+                mDriver = driver;
+                CurrentDriver.setDriver(mDriver);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+        });
+    }
+
+    private void storeUserData() {
+        String email = emailEditText.getText().toString();
+        String password = passwordEditText.getText().toString();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(userEmail, email);
+        editor.putString(userPassword, password);
+        editor.commit();
+    }
+
+    private void openCreateAccountActivity() {
+        Intent intent = new Intent(MainActivity.this, CreateAccount.class);
+        startActivity(intent);
+    }
+
+    private boolean isEmptyInput() {
+        return TextUtils.isEmpty(emailEditText.getText()) ||
+                TextUtils.isEmpty(passwordEditText.getText());
+    }
+
+    private boolean isErrorInput() {
+        return emailEditText.getError() != null;
+    }
+
+
 }

@@ -1,72 +1,104 @@
 package com.arons.android5779_6274_2436_app2.Model.Entities.Classes;
 
-public class Driver {
-    private String LastName;
-    private String FirstName;
-    private String IdNumber;
-    private String PhoneNumber;
-    private String MailAddress;
-    private String CreditCardNumber;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-    public Driver(String lastName, String firstName, String idNumber, String phoneNumber, String mailAddress, String creditCardNumber) {
-        LastName = lastName;
-        FirstName = firstName;
-        IdNumber = idNumber;
-        PhoneNumber = phoneNumber;
-        MailAddress = mailAddress;
-        CreditCardNumber = creditCardNumber;
+import java.io.Serializable;
+
+public class Driver implements Parcelable {
+    private String mId;
+    private String mFirstName;
+    private String mLastName;
+    private String mEmail;
+    private String mTelephone;
+    private AddressAndLocation mLocation;
+
+    public Driver(){};
+
+    protected Driver(Parcel in) {
+        mId=in.readString();
+        mFirstName = in.readString();
+        mLastName = in.readString();
+        mEmail = in.readString();
+        mTelephone = in.readString();
     }
 
-    public Driver(String firstName, String lastName) {
-        LastName = lastName;
-        FirstName = firstName;
+    public static final Creator<Driver> CREATOR = new Creator<Driver>() {
+        @Override
+        public Driver createFromParcel(Parcel in) {
+            return new Driver(in);
+        }
+
+        @Override
+        public Driver[] newArray(int size) {
+            return new Driver[size];
+        }
+    };
+
+    public String getId() {
+        return mId;
     }
 
-    public String getLastName() {
-        return LastName;
-    }
-
-    public void setLastName(String lastName) {
-        LastName = lastName;
+    public void setId(String id) {
+        mId = id;
     }
 
     public String getFirstName() {
-        return FirstName;
+        return mFirstName;
     }
 
     public void setFirstName(String firstName) {
-        FirstName = firstName;
+        mFirstName = firstName;
     }
 
-    public String getIdNumber() {
-        return IdNumber;
+    public String getLastName() {
+        return mLastName;
     }
 
-    public void setIdNumber(String idNumber) {
-        IdNumber = idNumber;
+    public void setLastName(String lastName) {
+        mLastName = lastName;
     }
 
-    public String getPhoneNumber() {
-        return PhoneNumber;
+    public String getEmail() {
+        return mEmail;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        PhoneNumber = phoneNumber;
+    public void setEmail(String email) {
+        mEmail = email;
     }
 
-    public String getMailAddress() {
-        return MailAddress;
+    public String getTelephone() {
+        return mTelephone;
     }
 
-    public void setMailAddress(String mailAddress) {
-        MailAddress = mailAddress;
+    public void setTelephone(String telephone) {
+        mTelephone = telephone;
     }
 
-    public String getCreditCardNumber() {
-        return CreditCardNumber;
+    public AddressAndLocation getLocation() {
+        return mLocation;
     }
 
-    public void setCreditCardNumber(String creditCardNumber) {
-        CreditCardNumber = creditCardNumber;
+    public void setLocation(AddressAndLocation location) {
+        if(location!=null)
+        mLocation = new AddressAndLocation(location);
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mFirstName);
+        dest.writeString(mLastName);
+        dest.writeString(mEmail);
+        dest.writeString(mTelephone);
+    }
+
+
+
 }

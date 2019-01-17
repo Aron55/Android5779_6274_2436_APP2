@@ -1,35 +1,45 @@
 package com.arons.android5779_6274_2436_app2.Model.Backend;
 
-import android.content.ContentValues;
-import android.content.Context;
-
 import com.arons.android5779_6274_2436_app2.Model.Entities.Classes.Driver;
 import com.arons.android5779_6274_2436_app2.Model.Entities.Classes.Ride;
 
-import java.util.Date;
-import java.util.List;
-
 public interface DBManager {
 
-    List<Driver> getListOfDriver(Context context);
+    void register(Driver driver, String password, Action action);
+    void signIn(String email,String password,Action action);
+    void signOut();
+    void getCurrentUser(ActionResult actionResult);
+    void updateProfile(Driver driver,Action action);
+    void sendEmailVerification();
 
-    List<Ride> getListOfRide(Context context);
+    void updateClientRequestToDataBase(final Ride ride, final Action action);
+    void notifyNewRide(final NotifyDataChange<Ride> notifyDataChange);
 
-    boolean addDriver(Driver driver, Context context) throws Exception;
+    //void stopNotifyNewRide();
 
-    List<Ride> getListOfFreeRide(Context context);
+    void notifyWaitingRidesList(final NotifyDataChange<Ride> notifyDataChange);
 
-    List<Ride> getListOfDoneRide(Context context);
+    void notifyRidesListByDriverKey(final NotifyDataChange<Ride> notifyDataChange, String driverKey);
 
-    List<Ride> getListOfRideOfThisDriver(Driver driver, Context context);
+    public interface Action {
+        void onSuccess();
 
-    List<Ride> getListOfFreeRideToACity(String city,Context context);
+        void onFailure();
+    }
 
-    List<Ride> getListOfFreeRideAtDistance(String driverPosition, float MaxDistance, Context context);
+    public interface NotifyDataChange<T> {
+        void OnDataChanged(T obj);
 
-    List<Ride> getListOfRideAtDate(Date date, Context context);
+        void onDataAdded(T obj);
 
-    List<Ride> getListOfRideAtPrice(float price, Context context);
+        void onDataRemoved(T obj);
 
+        void onFailure(Exception exception);
+    }
+
+    public interface ActionResult{
+        void onSuccess(Driver driver);
+        void onFailure();
+    }
 
 }
